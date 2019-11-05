@@ -1,8 +1,11 @@
 import React, { Component } from 'react'
-import { List, InputItem, WhiteSpace, Button, NavBar } from 'antd-mobile';
-import { createForm, formShape } from 'rc-form';
+import { List, InputItem, WhiteSpace, Button, NavBar } from 'antd-mobile'
+import { createForm, formShape } from 'rc-form'
+import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 // import PropTypes from 'prop-types'
 import Logo from '../../components/logo/logo'
+import { login } from '../../redux/actions'
 class Login extends Component {
   static propTypes = {
     form: formShape,
@@ -10,10 +13,14 @@ class Login extends Component {
   handelLogin = () => {
     this.props.form.validateFields((error, value) => {
       console.log(error, value);
+      this.props.login(value)
     });
   }
   render () {
     const { getFieldProps } = this.props.form;
+    let { msg, redirectTo } = this.props.user
+    if (redirectTo)
+      return <Redirect to={redirectTo} />
     return (
       <div>
         <NavBar>直聘</NavBar>
@@ -37,4 +44,4 @@ class Login extends Component {
     )
   }
 }
-export default createForm()(Login);
+export default connect(state => ({ user: state.user }), { login })(createForm()(Login));

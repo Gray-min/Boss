@@ -1,12 +1,26 @@
 import { combineReducers } from 'redux'
+import { AUTH_SUCCESS, ERROR_MSG } from './action-types'
 
-function a (state = 0, actions) {
+const initUser = {
+  //用户名
+  userName: '',
+  //用户类型
+  type: '',
+  //信息
+  msg: '',
+  //重定向
+  redirectTo: ''
+}
+
+function user (state = initUser, actions) {
   switch (actions.type) {
-    case 1:
-      return state
+    case AUTH_SUCCESS:
+      return { ...actions.data, redirectTo: '/' }
+    case ERROR_MSG:
+      return { ...state, msg: actions.data }
     default:
       return state
   }
 }
 
-export default combineReducers({ a })
+export default combineReducers({ user })

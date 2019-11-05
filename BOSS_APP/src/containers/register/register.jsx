@@ -1,34 +1,55 @@
 import React, { Component } from 'react'
-import { List, InputItem, WhiteSpace, Button, Radio, WingBlank, NavBar } from 'antd-mobile';
-import ListItem from 'antd-mobile/lib/list/ListItem';
+import { List, InputItem, WhiteSpace, Button, Radio, WingBlank, NavBar, Toast } from 'antd-mobile'
+import ListItem from 'antd-mobile/lib/list/ListItem'
+import { connect } from 'react-redux'
+import { Redirect } from 'react-router-dom'
 
-import { createForm, formShape } from 'rc-form';
+import { createForm, formShape } from 'rc-form'
 // import PropTypes from 'prop-types'
 import Logo from '../../components/logo/logo'
 import '../register/register.css'
+import { register } from '../../redux/actions'
 
 class Register extends Component {
   static propTypes = {
     form: formShape,
   };
   state = {
-    type: true
+    type: 0
+  }
+  componentDidMount () {
+    let { msg } = this.props.user
+    if (msg) {
+      Toast.fail(msg, 1);
+      msg = ""
+    }
   }
   handelRegister = () => {
     this.props.form.validateFields((error, value) => {
-      console.log(error, value);
+      const user = { ...this.state, ...value }
+      this.props.register(user)
     });
   }
   onChange = () => {
-    const { type } = this.state
-    console.log(type);
+    let { type } = this.state
+    if (type)
+      type = 0
+    else
+      type = 1
     this.setState({
-      type: !type
+      type
     });
   };
   render () {
     const { getFieldProps } = this.props.form;
     const { type } = this.state
+    let { msg, redirectTo } = this.props.user
+    // if (msg) {
+    //   Toast.fail(msg, 1);
+    //   msg = ''
+    // }
+    if (redirectTo)
+      return <Redirect to={redirectTo} />
     return (
       <div>
         <NavBar>直聘</NavBar>
@@ -40,19 +61,19 @@ class Register extends Component {
               placeholder="UserName"
             >用户名：</InputItem>
             <InputItem
-              {...getFieldProps('password')}
+              {...getFieldProps('passWord')}
               placeholder="Password"
               type="password"
             >密码：</InputItem>
             <InputItem
-              {...getFieldProps('confirmpassword')}
+              {...getFieldProps('passWord2')}
               placeholder="confirmpassword"
               type="password"
             >确认密码：</InputItem>
             <ListItem>
               用户类型:
-            <Radio className="my-radio" checked={type === true} onChange={this.onChange}>大神</Radio>
-              <Radio className="my-radio" checked={type === false} onChange={this.onChange}>老板</Radio>
+            <Radio className="my-radio" checked={type === 0} onChange={this.onChange} >大神</Radio>
+              <Radio className="my-radio" checked={type === 1} onChange={this.onChange}>老板</Radio>
             </ListItem>
 
             <WhiteSpace size="sm" />
@@ -65,4 +86,4 @@ class Register extends Component {
     )
   }
 }
-export default createForm()(Register);
+export default connect(state => ({ user: state.user }), { register })(createForm()(Register));
