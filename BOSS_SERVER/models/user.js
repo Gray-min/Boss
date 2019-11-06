@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
-mongoose.connect('mongodb://localhost/test', { useNewUrlParser: true });
+mongoose.connect('mongodb://localhost/test');
+// mongoose.set('useNewUrlParser', true);
+// mongoose.set('useFindAndModify', false);
+// mongoose.set('useCreateIndex', true);
+// mongoose.set('useUnifiedTopology', true);
 
 const userModel = new mongoose.Schema({
   userName: {
@@ -15,9 +19,13 @@ const userModel = new mongoose.Schema({
     type: Number,
     enum: [0, 1],
     required: true
-  }
+  },
+  header: { type: String, default: '' },
+  post: { type: String, default: '' },
+  info: { type: String, default: '' },
+  company: { type: String, default: '' },
+  salary: { type: String, default: '' }
 
 })
-
 const User = mongoose.model('User', userModel)
 module.exports = User

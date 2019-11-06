@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux'
-import { AUTH_SUCCESS, ERROR_MSG } from './action-types'
+import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER } from './action-types'
+import { getRedirectTo } from '../utils'
 
 const initUser = {
   //用户名
@@ -15,9 +16,13 @@ const initUser = {
 function user (state = initUser, actions) {
   switch (actions.type) {
     case AUTH_SUCCESS:
-      return { ...actions.data, redirectTo: '/' }
+      return { ...actions.data, redirectTo: getRedirectTo(actions.data) }
     case ERROR_MSG:
       return { ...state, msg: actions.data }
+    case RECEIVE_USER:
+      return actions.data
+    case RESET_USER:
+      return { ...initUser, msg: actions.data }
     default:
       return state
   }

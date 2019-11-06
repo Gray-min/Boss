@@ -1,6 +1,7 @@
 const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
+var cookieParser = require('cookie-parser')
 
 const router = require('./routers/router')
 const app = express()
@@ -23,6 +24,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+//cookie中间件
+app.use(cookieParser())
 //配置路由
 app.use(router)
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { List, InputItem, WhiteSpace, Button, Radio, WingBlank, NavBar, Toast } from 'antd-mobile'
+import { List, InputItem, WhiteSpace, Button, Radio, WingBlank, NavBar } from 'antd-mobile'
 import ListItem from 'antd-mobile/lib/list/ListItem'
 import { connect } from 'react-redux'
 import { Redirect } from 'react-router-dom'
@@ -16,13 +16,6 @@ class Register extends Component {
   };
   state = {
     type: 0
-  }
-  componentDidMount () {
-    let { msg } = this.props.user
-    if (msg) {
-      Toast.fail(msg, 1);
-      msg = ""
-    }
   }
   handelRegister = () => {
     this.props.form.validateFields((error, value) => {
@@ -43,11 +36,7 @@ class Register extends Component {
   render () {
     const { getFieldProps } = this.props.form;
     const { type } = this.state
-    let { msg, redirectTo } = this.props.user
-    // if (msg) {
-    //   Toast.fail(msg, 1);
-    //   msg = ''
-    // }
+    let { redirectTo } = this.props.user
     if (redirectTo)
       return <Redirect to={redirectTo} />
     return (

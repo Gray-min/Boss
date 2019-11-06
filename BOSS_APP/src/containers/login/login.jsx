@@ -18,7 +18,7 @@ class Login extends Component {
   }
   render () {
     const { getFieldProps } = this.props.form;
-    let { msg, redirectTo } = this.props.user
+    let { redirectTo } = this.props.user
     if (redirectTo)
       return <Redirect to={redirectTo} />
     return (
@@ -28,11 +28,11 @@ class Login extends Component {
         <List >
           <InputItem
             {...getFieldProps('userName')}
-            placeholder="controled input"
+            placeholder="userName"
           >用户名：</InputItem>
           <InputItem
-            {...getFieldProps('password')}
-            placeholder="controled input"
+            {...getFieldProps('passWord')}
+            placeholder="passWord"
             type="password"
           >密码：</InputItem>
           <WhiteSpace size="sm" />
