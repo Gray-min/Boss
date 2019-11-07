@@ -11,6 +11,7 @@ import Laoban from '../laoban/laoban'
 import Message from '../message/message'
 import Personal from '../personal/personal'
 import NotFound from '../../components/not-found/not-found'
+import NavFooter from '../../components/nav-footer/nav-footer'
 // import NavFooter from '../../components/nav-footer/nav-footer'
 
 import { getRedirectTo } from '../../utils'
@@ -77,18 +78,24 @@ class Main extends Component {
     if (!user._id)
       return <Redirect to='/login' />
 
-    const currentNave = this.navList.find(nav => nav.path = this.props.location.pathname)
+    const currentNave = this.navList.find(nav => nav.path === this.props.location.pathname)
+
+    if (user.type * 1 === 0) {
+      this.navList[0].hide = true
+    }
+    else
+      this.navList[1].hide = true
 
     return (
       <div>
-        {currentNave ? <NavBar>{currentNave.title}</NavBar> : null}
+        {currentNave ? <div style={{ position: 'fixed', top: 0, zIndex: 100, width: '100%' }}><NavBar>{currentNave.title}</NavBar></div> : null}
         <Switch>
-          {this.navList.map(nav => <Route path={nav.path} component={nav.component}></Route>)}
+          {this.navList.map((nav) => <Route key={nav.path} path={nav.path} component={nav.component}></Route>)}
           <Route path='/dasheninfo' component={DashenInfo}></Route>
           <Route path='/laobaninfo' component={LaobanInfo}></Route>
           <Route component={NotFound}></Route>
         </Switch>
-        {currentNave ? <NavBar>{currentNave.title}</NavBar> : null}
+        {currentNave ? <NavFooter navList={this.navList}></NavFooter> : null}
       </div>
     )
   }

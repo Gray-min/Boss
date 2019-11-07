@@ -35,7 +35,6 @@ router.post('/register', (req, res, next) => {
 //登陆
 router.post('/login', (req, res) => {
   const { userName, passWord } = req.body
-  console.log(userName, passWord)
   UserModel.findOne({ userName, passWord: md5(passWord) }, filter, (err, user) => {
     if (!user) { res.send({ code: 1, msg: '用户名或密码错误' }) }
     else {
@@ -55,7 +54,6 @@ router.post('/updateInfo', (req, res) => {
     // 如 果 没 有 , 说 明 没 有 登 陆 ,直 接 返 回 提 示 
     return res.json({ code: 1, msg: '请先登陆' })
   }
-  console.log(req.body)
   UserModel.findByIdAndUpdate(userid, req.body, (err, oldUser) => {
     if (!oldUser) {
       res.clearCookie('userid')
@@ -80,4 +78,18 @@ router.get('/user', (req, res) => {
     }
   })
 })
+
+//获取用户列表
+router.get('/userlist', (req, res) => {
+  const { type } = req.query
+  UserModel.find({ type: type * 1 }, filter).then(data => {
+    if (data.length === 0) {
+      res.send({ code: 1, msg: '暂无数据' })
+    }
+    else {
+      res.json({ code: 0, data })
+    }
+  })
+})
+
 module.exports = router

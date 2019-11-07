@@ -7,4 +7,6 @@ export const reqLogin = ({ userName, passWord }) => ajax('/login', { userName, p
 //完善信息
 export const reqUpdateInfo = (user) => ajax('/updateInfo', user, 'POST')
 //cookie请求自动登陆
-export const reqUser = () => ajax('/user', 'get')
+export const reqUser = () => ajax('/user', 'GET')
+//用户列表
+export const reqUserList = (type) => ajax('/userlist', type, 'GET')

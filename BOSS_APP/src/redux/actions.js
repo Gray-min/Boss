@@ -1,5 +1,5 @@
-import { reqRegister, reqLogin, reqUpdateInfo, reqUser } from '../api/index'
-import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER } from './action-types'
+import { reqRegister, reqLogin, reqUpdateInfo, reqUser, reqUserList } from '../api/index'
+import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER, RECEIVE_USER_LIST } from './action-types'
 
 //授权成功
 const authSuccess = (user) => ({ type: AUTH_SUCCESS, data: user })
@@ -11,7 +11,11 @@ const errorMsg = (msg) => ({ type: ERROR_MSG, data: msg })
 const receiveUser = (user) => ({ type: RECEIVE_USER, data: user })
 
 //重置用户
-const resetUser = (msg) => ({ type: RESET_USER, data: msg })
+export const resetUser = (msg) => ({ type: RESET_USER, data: msg })
+
+//接受用户列表
+const receiveUserList = (users) => ({ type: RECEIVE_USER_LIST, data: users })
+
 
 
 //异步注册
@@ -65,5 +69,17 @@ export const autoLogin = () => {
       dispatch(receiveUser(result.data))
     else
       dispatch(resetUser(result.msg))
+  }
+}
+
+//异步获取用户列表
+export const reqUsers = (type) => {
+  return async dispatch => {
+    const response = await reqUserList(type)
+    const result = response.data
+    if (result.code === 0)
+      dispatch(receiveUserList(result.data))
+    else
+      dispatch(errorMsg(result.msg))
   }
 }
