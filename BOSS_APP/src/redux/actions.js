@@ -1,5 +1,6 @@
-import { reqRegister, reqLogin, reqUpdateInfo, reqUser, reqUserList } from '../api/index'
-import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER, RECEIVE_USER_LIST } from './action-types'
+import { reqRegister, reqLogin, reqUpdateInfo, reqUser, reqUserList, reqChatMsgList } from '../api/index'
+import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER, RECEIVE_USER_LIST, RECEIVE_CHAT_MSG_LIST, RECEIVE_MSG } from './action-types'
+import io from 'socket.io-client'
 
 //授权成功
 const authSuccess = (user) => ({ type: AUTH_SUCCESS, data: user })
@@ -16,8 +17,30 @@ export const resetUser = (msg) => ({ type: RESET_USER, data: msg })
 //接受用户列表
 const receiveUserList = (users) => ({ type: RECEIVE_USER_LIST, data: users })
 
+const receiveMsgList = ({ users, chatMsgs }) => ({ type: RECEIVE_CHAT_MSG_LIST, data: { users, chatMsgs } })
 
+const receiveMsg = (msg) => ({ type: RECEIVE_MSG, data: msg })
 
+function initIO (dispatch, userid) {
+  if (!io.socket) {
+    io.socket = io('ws://localhost:4000')
+    io.socket.on('receiveMsg', data => {
+      console.log('收到服务器消息', data)
+      if (userid === data.from || userid === data.to)
+        dispatch(receiveMsg(data))
+    })
+  }
+}
+
+async function getChatMsgs (dispatch, userid) {
+  initIO(dispatch, userid)
+  const response = await reqChatMsgList()
+  const result = response.data
+  if (result.code === 0) {
+    const { users, chatMsgs } = result.data
+    dispatch(receiveMsgList({ users, chatMsgs }))
+  }
+}
 //异步注册
 export const register = (user) => {
   const { userName, passWord, passWord2, type } = user
@@ -29,8 +52,10 @@ export const register = (user) => {
   return async dispatch => {
     const response = await reqRegister({ userName, passWord, type })
     const result = response.data
-    if (result.code === 0)
+    if (result.code === 0) {
+      getChatMsgs(dispatch, result.data._id)
       dispatch(authSuccess({ userName, passWord, type }))
+    }
     else
       dispatch(errorMsg(result.msg))
   }
@@ -41,8 +66,10 @@ export const login = (user) => {
   return async dispatch => {
     const response = await reqLogin(user)
     const result = response.data
-    if (result.code === 0)
+    if (result.code === 0) {
+      getChatMsgs(dispatch, result.data._id)
       dispatch(authSuccess(result.data))
+    }
     else
       dispatch(errorMsg(result.msg))
   }
@@ -65,8 +92,10 @@ export const autoLogin = () => {
   return async dispatch => {
     const response = await reqUser()
     const result = response.data
-    if (result.code === 0)
+    if (result.code === 0) {
+      getChatMsgs(dispatch, result.data._id)
       dispatch(receiveUser(result.data))
+    }
     else
       dispatch(resetUser(result.msg))
   }
@@ -81,5 +110,11 @@ export const reqUsers = (type) => {
       dispatch(receiveUserList(result.data))
     else
       dispatch(errorMsg(result.msg))
+  }
+}
+//异步发送聊天消息
+export const sendMsg = ({ from, to, msg }) => {
+  return dispatch => {
+    io.socket.emit('sendMsg', { from, to, msg })
   }
 }

@@ -4,7 +4,7 @@ import { reqUsers } from '../../redux/actions'
 import UserList from '../../components/user-list/user-list'
 class Laoban extends Component {
   componentDidMount () {
-    this.props.userList({ type: 0 })
+    this.props.reqUsers({ type: 0 })
   }
   render () {
     const { userList } = this.props
@@ -14,6 +14,7 @@ class Laoban extends Component {
       return (
         <UserList userList={userList}></UserList>
       )
+    // return 11
   }
 }
 export default connect(state => ({

@@ -6,6 +6,8 @@ const md5 = require('blueimp-md5')
 
 const UserModel = require('../models/user')
 
+const ChatModel = require('../models/chat')
+
 const filter = { passWord: 0, __v: 0 }
 
 
@@ -92,4 +94,22 @@ router.get('/userlist', (req, res) => {
   })
 })
 
+//获取当前用户的聊天消息列表
+router.get('/msglist', (req, res) => {
+  const userid = req.cookies.userid
+  //获取所有用户
+  UserModel.find((err, userDocs) => {
+    // const users = data.reduce((users, user) =>
+    //   users[user._id] = { userName: user.userName, header: user.header }
+    //   , {})
+    const users = userDocs.reduce((users, user) => {
+      users[user._id] = { username: user.username, header: user.header }
+      return users
+    }, {})
+    //获取相关信息
+    ChatModel.find({ '$or': [{ from: userid }, { to: userid }] }, filter, (err, chatMsgs) => {
+      res.send({ code: 0, data: { users, chatMsgs } })
+    })
+  })
+})
 module.exports = router

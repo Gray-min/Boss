@@ -1,11 +1,4 @@
-const mongoose = require('mongoose')
-
-mongoose.connect('mongodb://localhost/test');
-// mongoose.set('useNewUrlParser', true);
-// mongoose.set('useFindAndModify', false);
-// mongoose.set('useCreateIndex', true);
-// mongoose.set('useUnifiedTopology', true);
-
+const mongoose = require('../db/db')
 const userModel = new mongoose.Schema({
   userName: {
     type: String,

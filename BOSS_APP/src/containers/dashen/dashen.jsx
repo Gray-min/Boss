@@ -8,7 +8,6 @@ class Dashen extends Component {
   }
   render () {
     const { userList } = this.props
-    console.log(Boolean(!userList))
     if (userList.length === 0)
       return (<div>暂无数据</div>)
     else

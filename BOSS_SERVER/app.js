@@ -5,6 +5,10 @@ var cookieParser = require('cookie-parser')
 
 const router = require('./routers/router')
 const app = express()
+var http = require('http').createServer(app)
+require('./socket-io/socket-io')(http)
+
+
 
 //配置静态资源
 app.use('/public/', express.static('./public/'))
@@ -36,4 +40,4 @@ app.use((err, req, res, next) => {
   })
 })
 
-app.listen(4000, () => console.log('running on port 4000'))
+http.listen(4000, (server) => console.log('running on port 4000'))
