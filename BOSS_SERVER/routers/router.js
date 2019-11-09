@@ -103,7 +103,7 @@ router.get('/msglist', (req, res) => {
     //   users[user._id] = { userName: user.userName, header: user.header }
     //   , {})
     const users = userDocs.reduce((users, user) => {
-      users[user._id] = { username: user.username, header: user.header }
+      users[user._id] = { userName: user.userName, header: user.header }
       return users
     }, {})
     //获取相关信息
