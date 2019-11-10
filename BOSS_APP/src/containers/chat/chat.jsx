@@ -3,7 +3,7 @@ import { NavBar, List, InputItem, Icon, Grid } from 'antd-mobile'
 import { connect } from 'react-redux'
 
 import './index.css'
-import { sendMsg } from '../../redux/actions'
+import { sendMsg, read } from '../../redux/actions'
 const Item = List.Item;
 class Chat extends Component {
   state = {
@@ -43,6 +43,12 @@ class Chat extends Component {
     // 初始显示列表
     window.scrollTo(0, document.body.scrollHeight)
 
+  }
+
+  componentWillUnmount () {
+    const from = this.props.match.params.userid
+    const to = this.props.user._id
+    this.props.read(from, to)
   }
 
   componentDidUpdate () {
@@ -130,6 +136,7 @@ class Chat extends Component {
 export default connect(
   state => ({ user: state.user, chat: state.chat }),
   {
-    sendMsg
+    sendMsg,
+    read
   }
 )(Chat)

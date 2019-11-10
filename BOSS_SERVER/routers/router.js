@@ -112,4 +112,15 @@ router.get('/msglist', (req, res) => {
     })
   })
 })
+
+//用户读消息
+router.post('/readmsg', (req, res) => {
+  const to = req.cookies.userid
+  const { from } = req.body
+  console.log(to, from)
+  ChatModel.update({ from, to, read: false }, { read: true }, { multi: true }, function (err, doc) {
+    console.log('/readmsg', doc)
+    res.send({ code: 0, data: doc.nModified }) // 更新的数量
+  })
+})
 module.exports = router

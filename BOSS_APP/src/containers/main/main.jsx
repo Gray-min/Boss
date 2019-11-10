@@ -97,12 +97,12 @@ class Main extends Component {
           <Route path='/chat/:userid' component={Chat}></Route>
           <Route component={NotFound}></Route>
         </Switch>
-        {currentNave ? <NavFooter navList={this.navList}></NavFooter> : null}
+        {currentNave ? <NavFooter navList={this.navList} unReadCount={this.props.unReadCount}></NavFooter> : null}
       </div>
     )
   }
 }
 export default connect(
-  state => ({ user: state.user }),
+  state => ({ user: state.user, unReadCount: state.chat.unReadCount }),
   { autoLogin }
 )(Main)

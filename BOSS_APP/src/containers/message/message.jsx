@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { List, Badge } from 'antd-mobile'
+import QueueAnim from 'rc-queue-anim'
 /*
 对chatMsgs按chat_id进行分组, 并得到每个组的lastMsg组成的数组
 1. 找出每个聊天的lastMsg, 并用一个对象容器来保存 {chat_id, lastMsg}
@@ -48,24 +49,28 @@ class Message extends Component {
     return (
 
       <List style={{ marginBottom: 50, marginTop: 45 }}>
-        {
-          lastMsgs.map(msg => {
-            const targetId = msg.to === user._id ? msg.from : msg.to
-            const header = users[targetId].header
-            return (
-              <List.Item
-                key={msg._id}
-                thumb={require(`../../assets/images/headers/${header}.png`)}
-                arrow='horizontal'
-                extra={<Badge text={msg.unReadCount} />}
-                onClick={() => this.props.history.push(`/chat/${targetId}`)}
-              >
-                {msg.msg}
-                <List.Item.Brief>{users[targetId].userName}</List.Item.Brief>
-              </List.Item>
-            )
-          })
-        }
+        <QueueAnim delay={1000}>
+          {
+            lastMsgs.map(msg => {
+              const targetId = msg.to === user._id ? msg.from : msg.to
+              const header = users[targetId].header
+              console.log(targetId, header)
+              return (
+                <List.Item
+                  key={msg._id}
+                  thumb={require(`../../assets/images/headers/${header}.png`)}
+                  arrow='horizontal'
+                  extra={<Badge text={msg.unReadCount} />}
+                  onClick={() => this.props.history.push(`/chat/${targetId}`)}
+                >
+                  {msg.msg}
+                  <List.Item.Brief>{users[targetId].userName}</List.Item.Brief>
+                </List.Item>
+              )
+            })
+          }
+        </QueueAnim>
+
       </List>
 
     )

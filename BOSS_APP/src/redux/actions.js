@@ -1,5 +1,5 @@
-import { reqRegister, reqLogin, reqUpdateInfo, reqUser, reqUserList, reqChatMsgList } from '../api/index'
-import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER, RECEIVE_USER_LIST, RECEIVE_CHAT_MSG_LIST, RECEIVE_MSG } from './action-types'
+import { reqRegister, reqLogin, reqUpdateInfo, reqUser, reqUserList, reqChatMsgList, reqReadMsg } from '../api/index'
+import { AUTH_SUCCESS, ERROR_MSG, RECEIVE_USER, RESET_USER, RECEIVE_USER_LIST, RECEIVE_CHAT_MSG_LIST, RECEIVE_MSG, READ_MSG } from './action-types'
 import io from 'socket.io-client'
 
 //授权成功
@@ -17,9 +17,11 @@ export const resetUser = (msg) => ({ type: RESET_USER, data: msg })
 //接受用户列表
 const receiveUserList = (users) => ({ type: RECEIVE_USER_LIST, data: users })
 
-const receiveMsgList = ({ users, chatMsgs }) => ({ type: RECEIVE_CHAT_MSG_LIST, data: { users, chatMsgs } })
+const receiveMsgList = ({ users, chatMsgs, userid }) => ({ type: RECEIVE_CHAT_MSG_LIST, data: { users, chatMsgs, userid } })
 
-const receiveMsg = (msg) => ({ type: RECEIVE_MSG, data: msg })
+const receiveMsg = (msg, userid) => ({ type: RECEIVE_MSG, data: { msg, userid } })
+
+const readMsg = ({ from, to, count }) => ({ type: READ_MSG, data: { from, to, count } })
 
 function initIO (dispatch, userid) {
   if (!io.socket) {
@@ -27,7 +29,7 @@ function initIO (dispatch, userid) {
     io.socket.on('receiveMsg', data => {
       console.log('收到服务器消息', data)
       if (userid === data.from || userid === data.to)
-        dispatch(receiveMsg(data))
+        dispatch(receiveMsg(data, userid))
     })
   }
 }
@@ -38,7 +40,7 @@ async function getChatMsgs (dispatch, userid) {
   const result = response.data
   if (result.code === 0) {
     const { users, chatMsgs } = result.data
-    dispatch(receiveMsgList({ users, chatMsgs }))
+    dispatch(receiveMsgList({ users, chatMsgs, userid }))
   }
 }
 //异步注册
@@ -116,5 +118,16 @@ export const reqUsers = (type) => {
 export const sendMsg = ({ from, to, msg }) => {
   return dispatch => {
     io.socket.emit('sendMsg', { from, to, msg })
+  }
+}
+//异步用户读消息
+export const read = (from, to) => {
+  return async dispatch => {
+    const response = await reqReadMsg({ from })
+    const result = response.data
+    if (result.code === 0)
+      dispatch(readMsg({ from, to, count: result.data }))
+    else
+      dispatch(errorMsg(result.msg))
   }
 }

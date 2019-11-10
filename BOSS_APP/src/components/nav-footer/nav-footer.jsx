@@ -4,7 +4,8 @@ import { withRouter } from 'react-router-dom'
 import PropTypes from 'prop-types'
 class NavFooter extends Component {
   static propTypes = {
-    navList: PropTypes.array.isRequired
+    navList: PropTypes.array.isRequired,
+    unReadCount: PropTypes.number.isRequired
   }
 
   render () {
@@ -17,6 +18,7 @@ class NavFooter extends Component {
           {navList.map((nav, index) =>
             <TabBar.Item
               key={nav.path}
+              badge={nav.path === '/message' ? this.props.unReadCount : 0}
               icon={{ uri: require('../../assets/images/nav/' + nav.icon + '.png') }}
               selectedIcon={{ uri: require(`../../assets/images/nav/${nav.icon}-selected.png`) }}
               title={nav.text}
